@@ -16,9 +16,7 @@ client.on('ready', () => {
   console.log(`${client.user.tag} 로그인 되었습니다.`);
 });
 
-//client.on('disconnect', () => console.log('연결이 해제되었습니다. 다시 연결합니다...'));
 client.on('shardDisconnected', () => console.log('연결이 해제되었습니다. 다시 연결합니다...'));
-//client.on('reconnecting', () => console.log('다시 연결 되었습니다.'));
 client.on('shardReconnecting', id => console.log(`Shard with ID ${id} reconnected.`));
 
 client.login(TOKEN);
@@ -35,22 +33,7 @@ client.on('message', async msg => {
   let command = msg.content.toLowerCase().split(' ')[0];
   command = command.slice(PREFIX.length);
 
-  if (command === '정보'){
-    //console.log('msg 정보 : ' + msg);
-    console.log(msg.member.voiceChannel);
-    msg.reply(`
-    msg 정보 : ${msg}
-    msg.author.bot : ${msg.author.bot}
-    msg.content : ${msg.content}
-    msg.channel : ${msg.channel}
-    msg.guild: ${msg.guild}
-    msg.guild.id = ${msg.guild.id}
-    msg.member.voice.vhannel = ${msg.member.voice.channel}
-    msg.client.user = ${msg.client.user}
-    `);
-  }
-
-  else if(command === '재생'){
+ if(command === '재생'){
     const voiceChannel = msg.member.voice.channel;
     if(!voiceChannel) return msg.channel.send('먼저 음성채널에 들어가세요');
     const permissions = voiceChannel.permissionsFor(msg.client.user);
@@ -65,8 +48,8 @@ client.on('message', async msg => {
 			const playlist = await youtube.getPlaylist(url);
 			const videos = await playlist.getVideos();
 			for (const video of Object.values(videos)) {
-				const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
-				await handleVideo(video2, msg, voiceChannel, true); // eslint-disable-line no-await-in-loop
+				const video2 = await youtube.getVideoByID(video.id); 
+				await handleVideo(video2, msg, voiceChannel, true);
 			}
 			return msg.channel.send(`✅ Playlist: **${playlist.title}** 추가!!`);
     } else {
@@ -81,17 +64,14 @@ client.on('message', async msg => {
 ${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}
 🔥1~10 중 원하는 곡을 선택하세요.(10초)🔥
 					`);
-					// eslint-disable-next-line max-depth
 					try {
 						var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
-							//maxMatches: 1,
 							max: 1,
 							time: 10000,
 							errors: ['time']
 						});
 					} catch (err) {
 						console.error(err);
-						//return  msg.channel.send('입력된 값이 없거나 잘못되어 취소합니다');
 						return msg.channel.send(err);
 					}
 					const videoIndex = parseInt(response.first().content);
@@ -177,23 +157,6 @@ ${serverQueue.songs.map(song => `**📀** ${song.title}`).join('\n')}
 `
   );
 }
-  else if(command === '꺼져'){
-    msg.channel.send('퉤퉤');
-	serverQueue.songs = [];
-	serverQueue.connection.disconnect();
-  }
-  else if(command === '드루와'){
-    msg.channel.send('하-위');
-    const voiceChannel = msg.member.voice.channel;
-    voiceChannel.join();  
-  }
-  else if(command === '돌덩이'){
-    const broadcast = client.voice.createBroadcast();
-    broadcast.play('http://trt.playmk.kro.kr:3009/tracks/5e6b8811e2caec371fce58d4', {volume:0.5});
-    for (const connection of client.voice.connections.values()) {
-      connection.play(broadcast);
-    }
-  }
   return undefined;
 });
 
@@ -223,9 +186,9 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
 			queueConstruct.connection = connection;
 			yPlay(msg.guild, queueConstruct.songs[0]);
 		} catch (error) {
-			console.error(`음성 채널에 들어갈 수 없어요ㅠㅠ 에러: ${error}`);
+			console.error(`음성 채널에 들어갈 수 없습니다. error: ${error}`);
 			queue.delete(msg.guild.id);
-			return msg.channel.send(`음성 채널에 들어갈 수 없어요ㅠㅠ 에러: ${error}`);
+			return msg.channel.send(`음성 채널에 들어갈 수 없습니다. error: ${error}`);
 		}
 	} else {
 		serverQueue.songs.push(song);
@@ -233,7 +196,7 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
 		if (playlist) return undefined;
     else return msg.channel.send(`
 ✅ **${song.title}**
-리스트에 추가합니다~`);
+리스트에 추가합니다`);
 	}
 	return undefined;
 }
