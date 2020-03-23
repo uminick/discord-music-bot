@@ -1,0 +1,5 @@
+{
+    "TOKEN": "Discord bot account token",
+    "PREFIX": "!",
+    "GOOGLE_API_KEY": "Youtube API key"
+}
