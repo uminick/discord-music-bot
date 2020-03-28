@@ -97,7 +97,7 @@ ${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}
 		if (!msg.member.voice.channel) return msg.channel.send('음성채널에 들어간 후 실행하십셔!!');
 		if (!serverQueue) return msg.channel.send('There is nothing playing that I could stop for you.');
 		serverQueue.songs = [];
-    	serverQueue.connection.disconnect();
+		serverQueue.connection.dispatcher.end();
 		return undefined;
   }
   else if (command === '볼륨') {
